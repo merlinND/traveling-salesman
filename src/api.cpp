@@ -1,10 +1,11 @@
-#include<stdio.h> 
-#include<math.h>
+#include <stdio.h> 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <sys/time.h>
 #include <assert.h>
+#include <limits.h>
 
 #define MAXMOT 256
 #define MAXS 500
@@ -235,8 +236,74 @@ void supprimer_aretes(const int nb_villes, double **T)
   free(T);
 }
 
+bool est_dans_chemin(t_cycle * chemin, int ville)
+{
+  for(int i = 0; i < chemin->taille; ++i)
+  {
+    if (chemin->c[i] == ville)
+      return true;
+  }
+  return false;
+}
+
+void recopier_chemin(t_cycle * source, t_cycle * destination)
+{
+  destination->taille = source->taille;
+  destination->poids = source->poids;
+  for (int i = 0; i < source->taille; ++i)
+  {
+    destination->c[i] = source->c[i];
+  }
+}
 
 
+void pvc_exact_recursif(int nbVilles, double ** distances, t_cycle * chemin, t_cycle * meilleur)
+{
+  if (chemin->taille == nbVilles)
+  {
+    double trajetRetour = distances[chemin->c[chemin->taille -1]][0];
+    if (chemin->poids + trajetRetour < meilleur->poids)
+    {
+      chemin->poids += trajetRetour;
+      recopier_chemin(chemin, meilleur);
+      chemin->poids -= trajetRetour;
+    }
+  }
+  else
+  {
+    for(int i = 0; i < nbVilles; ++i)
+    {
+      if(!est_dans_chemin(chemin, i))
+      {
+        double trajet = distances[chemin->c[chemin->taille - 1]][i];
+        chemin->taille++;
+        chemin->poids += trajet;
+        chemin->c[chemin->taille-1] = i;
+
+        // Appel récursif
+        pvc_exact_recursif(nbVilles, distances, chemin, meilleur);
+
+        // "Dépiler" la dernière ville parcourue pour commencer une nouvelle branche
+        chemin->taille--;
+        chemin->poids -= trajet;
+      }
+    }
+  }
+}
+
+t_cycle pvc_exact(int nbVilles, double ** distances)
+{
+   t_cycle meilleur, courant;
+   // Solution actuelle : un chemin de poids infini
+   meilleur.taille = 0;
+   meilleur.poids = (double)INT_MAX; // TODO: trouver la capacity maximale d'un double
+   // Par convention, on commence par la ville 0
+   courant.taille = 1;
+   courant.poids = 0;
+   courant.c[0] = 0;
+   pvc_exact_recursif(nbVilles, distances, &courant, &meilleur);
+   return meilleur;
+}
 
 /**
  * Fonction main.
@@ -267,11 +334,7 @@ int main (int argc, char *argv[])
   //afficher_distances(nb_villes,distances);
 
   //naif
-  t_cycle cycle;
-  cycle.taille=3;
-  cycle.c[0]=0;
-  cycle.c[1]=1;
-  cycle.c[2]=2;
+  t_cycle cycle = pvc_exact(10, distances);
   afficher_cycle_html(cycle, abscisses, ordonnees);
   
   double ** Aretes =  trier_aretes(nb_villes, distances);
