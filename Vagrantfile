@@ -1,7 +1,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 $script = <<SCRIPT
-sudo yum install ncurses-devel tcl-devel gcc-c++
+sudo yum -y install ncurses-devel tcl-devel gcc-c++
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
