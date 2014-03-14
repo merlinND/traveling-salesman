@@ -25,6 +25,7 @@ clean:
 	rm -rf build/
 
 run: public/$(EXE)
+	rm -f public/DisplayTsp.html
 	cd public; ./$(EXE)
 
 public/$(EXE): $(OBJECTS)

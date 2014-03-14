@@ -104,11 +104,11 @@ void supprimer_distances_et_coordonnees(const int nb_villes, double **distances,
  */
 void afficher_cycle_html(const t_cycle cycle, double *posX, double *posY)
 {
-  FILE * fout = fopen("DisplayTsp2.html","w");
+  FILE * fout = fopen("DisplayTsp.html","w");
   if(fout != NULL)
     {
       int i;
-      fprintf(fout, "<html>\n <applet codebase=\".\" code=\"DisplayTsp.class\" width=200 height=200>\n");
+      fprintf(fout, "<html>\n <applet codebase=\".\" code=\"DisplayTsp.class\" width=800 height=600>\n");
       fprintf(fout, "<param name = Problem value = \"custom\">\n");
       fprintf(fout, "<param name = Problem CitiesPosX value = \"");
       for(i = 0; i < cycle.taille; i++)
