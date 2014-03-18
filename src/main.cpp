@@ -35,7 +35,6 @@ int main (int argc, char *argv[])
           ( current.tv_nsec - myTimerStart.tv_nsec)/1000000.0);
   printf("Temps passé (ms) : %lf\n", elapsed_in_ms);
 
-
   //Affichage des distances
   //afficher_distances(nb_villes,distances);
 

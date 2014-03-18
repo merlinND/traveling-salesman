@@ -44,7 +44,7 @@ t_cycle pvc_exact(int nbVilles, double ** distances)
    t_cycle meilleur, courant;
    // Solution actuelle : un chemin de poids infini
    meilleur.taille = 0;
-   meilleur.poids = (double)INT_MAX; // TODO: trouver la capacity maximale d'un double
+   meilleur.poids = DOUBLE_MAX;
    // Par convention, on commence par la ville 0
    courant.taille = 1;
    courant.poids = 0;
