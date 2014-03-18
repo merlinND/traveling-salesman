@@ -2,18 +2,19 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+
 #include <sys/time.h>
 #include <assert.h>
 #include <limits.h>
 
 #include "api.h"
 #include "outils.h"
+#include "temps.h"
 #include "pvc_exact.h"
 #include "pvc_approche_ppv.h"
 
 /**
- * Fonction main.
+ * Fonction main
  */
 int main (int argc, char *argv[])
 {
@@ -22,39 +23,38 @@ int main (int argc, char *argv[])
   double *ordonnees;
   unsigned int nb_villes;
 
-  // Initialisation du timer pour mesurer des temps (compiler avec -lrt)
-  struct timespec myTimerStart;
-  clock_gettime(CLOCK_REALTIME, &myTimerStart);
-
-  // Exemple de mesure du temps
+  // Initialize timer (compile with -lrt)
   lire_donnees("defi250.csv", &nb_villes, &distances, &abscisses, &ordonnees);
 
-  // Récupération du timer et affichage
-  struct timespec current;
-  clock_gettime(CLOCK_REALTIME, &current); //Linux gettime
-  double elapsed_in_ms =    (( current.tv_sec - myTimerStart.tv_sec) *1000 +
-          ( current.tv_nsec - myTimerStart.tv_nsec)/1000000.0);
-  printf("Temps passé (ms) : %lf\n", elapsed_in_ms);
-
-  // Affichage des distances
+  // Print the distances
   //afficher_distances(nb_villes,distances);
 
-  t_cycle cycle;
-  int problem_size = 250;
-  // Résolution par l'algorithme naïf
-  //cycle = pvc_exact(problem_size, distances);
-  // Résolution par l'algorithme naïf avec élagage
+  // Naïve solution
+  demarrer_mesure_temps();
+  pvc_exact(10, distances);
+  afficher_mesure_temps("pvc exact x10");
+
+  // Naïve solution with pruning
+  demarrer_mesure_temps();
+  pvc_exact_branch_and_bound(10, distances);
+  afficher_mesure_temps("pvc exact branch & bound x10");
+
+  // Greedy solution
+  demarrer_mesure_temps();
+  t_cycle cycle = pvc_approche_ppv(250, distances);
+  afficher_mesure_temps("ppv x250");
+
+  // Kruskall
   // TODO
-  // Résolution par l'algorithme glouton
-  cycle = pvc_approche_ppv(problem_size, distances);
-  
+
   // Output (HTML)
   afficher_cycle_html(cycle, abscisses, ordonnees);
 
   double ** aretes =  trier_aretes(nb_villes, distances);
   // <-- Kruskal Here
-  supprimer_aretes(nb_villes, aretes);
 
+  // Clean-up
+  supprimer_aretes(nb_villes, aretes);
   supprimer_distances_et_coordonnees(nb_villes, distances, abscisses, ordonnees);
   return 0;
 }
