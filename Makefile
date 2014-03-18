@@ -10,7 +10,7 @@ LNFLAGS = $(LIB_SYS)
 EXE = traveling-salesman
 
 # Sources
-SRC = api.cpp
+SRC = api.cpp main.cpp outils.cpp pvc_exact.cpp
 
 # Objets
 OBJECTS = $(SRC:%.cpp=build/%.o)
@@ -35,4 +35,3 @@ public/$(EXE): $(OBJECTS)
 build/%.o: src/%.cpp
 	mkdir -p `dirname $@`
 	$(CC) -c $(CFLAGS) -o $@ $<
-
