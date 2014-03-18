@@ -1,5 +1,9 @@
 #include "outils.h"
 
+#include <limits>
+
+const double DOUBLE_MAX = std::numeric_limits<double>::max();
+
 bool est_dans_chemin(t_cycle * chemin, int ville)
 {
   for(int i = 0; i < chemin->taille; ++i)

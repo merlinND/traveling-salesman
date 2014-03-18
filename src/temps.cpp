@@ -16,5 +16,5 @@ void afficher_mesure_temps(const char * legende)
   clock_gettime(CLOCK_REALTIME, &current);
   double elapsed_in_ms =    (( current.tv_sec - myTimerStart.tv_sec) *1000 +
           ( current.tv_nsec - myTimerStart.tv_nsec)/1000000.0);
-  printf("Temps passé (ms) sur %s : %lf\n", legende, elapsed_in_ms);
+  printf("Time spent (ms) on %s : %lf\n", legende, elapsed_in_ms);
 }

@@ -10,7 +10,7 @@ LNFLAGS = $(LIB_SYS)
 EXE = traveling-salesman
 
 # Sources
-SRC = api.cpp main.cpp outils.cpp pvc_exact.cpp temps.cpp
+SRC =  main.cpp api.cpp temps.cpp outils.cpp pvc_exact.cpp pvc_approche_ppv.cpp
 
 # Objets
 OBJECTS = $(SRC:%.cpp=build/%.o)
