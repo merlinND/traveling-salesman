@@ -1,5 +1,5 @@
 # Libs
-LIB_SYS = -lm -lrt
+LIB_SYS = -lm
 
 # Compilation Binaries
 CC = g++
@@ -10,7 +10,8 @@ LNFLAGS = $(LIB_SYS)
 EXE = traveling-salesman
 
 # Sources
-SRC =  main.cpp api.cpp temps.cpp outils.cpp pvc_exact.cpp pvc_approche_ppv.cpp
+# TODO: add back temps.cpp and real-time library
+SRC =  main.cpp api.cpp  outils.cpp pvc_exact.cpp pvc_approche_ppv.cpp pvc_spanning_tree.cpp
 
 # Objets
 OBJECTS = $(SRC:%.cpp=build/%.o)

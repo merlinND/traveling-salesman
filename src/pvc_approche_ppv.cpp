@@ -25,7 +25,6 @@ t_cycle pvc_approche_ppv(int nbVilles, double ** distances)
     courant.poids += trajet;
     courant.c[courant.taille] = ville;
   }
-
-  // TODO : boucler ?
+  
   return courant;
 }
