@@ -49,14 +49,11 @@ int main (int argc, char *argv[])
 
   // Greedy solution
   //demarrer_mesure_temps();
-  pvc_approche_ppv(250, distances);
+  pvc_approche_ppv(nb_villes, distances);
   //afficher_mesure_temps("ppv x250");
 
   // Kruskall
-  double ** aretes = trier_aretes(nb_villes, distances);
-  solution = pvc_spanning_tree(nb_villes, distances, aretes);
-  supprimer_aretes(nb_villes, aretes);
-
+  solution = pvc_spanning_tree(10, distances);
 
   // Output (HTML)
   print_cycle(&solution);

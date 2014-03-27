@@ -149,11 +149,10 @@ double **trier_aretes(const int n, double **d)
 
 
   //Decommenter pour vérifier le tri
-  /*
-  for(i = 0; i < a; i++)
-    printf("%f ", T[i][2]);
-  printf("\n");
-  */
+  // for(i = 0; i < a; i++)
+  //   printf("%f ", T[i][2]);
+  // printf("\n");
+  
   return T;
 }
 

@@ -71,7 +71,7 @@ int comparer(const void *v1, const void *v2);
  *
  * @param [in] n le nombre de villes
  * @param [in] d tableau des n x n distances.
- * @return tableau d'arêtes triées T[i][j] = poids_ij
+ * @return tableau d'arêtes triées T[a] = poids_ij
  */
 double **trier_aretes(const int n, double **d);
 
