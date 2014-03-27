@@ -37,8 +37,9 @@ void minimum_spanning_tree(int n, double ** distances, int * parents)
   // T[a][1] = j;        // The destination node
   // T[a][2] = d[i][j];  // The cost of this edge
 
-  int i, j, rootI, rootJ;
-  for (unsigned int h = 0; h < numberOfEdges; ++h)
+  unsigned int i, j, rootI, rootJ;
+  unsigned int h = 0, size = 1;
+  while (size < n)
   {
     i = edges[h][0];
     j = edges[h][1];
@@ -54,7 +55,10 @@ void minimum_spanning_tree(int n, double ** distances, int * parents)
         if (height[rootI] == height[rootJ])
           height[rootJ]++;
       }
-    }    
+
+      size++;
+    }
+    h++;
   }
 
   // Clean-up
