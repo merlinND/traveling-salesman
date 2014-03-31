@@ -5,50 +5,29 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-t_cycle two_opt(int indexVilleOpt, int nbVilles, double ** distances, t_cycle cycle)
+t_cycle two_opt(int idx, int nbVilles, double ** distances, t_cycle cycle)
 {
-  int taille_locale = 5;
-  int debut = 0;
-  if(indexVilleOpt == 0) {
-    taille_locale = 3;
-  } else if(indexVilleOpt == 1) {
-    taille_locale = 4;
-  } else if(indexVilleOpt == nbVilles - 1) {
-    debut = nbVilles - 4;
-    taille_locale = 3;
-  } else if(indexVilleOpt == nbVilles - 2) {
-    debut = nbVilles - 5;
-    taille_locale = 4;
-  } else {
-    debut = indexVilleOpt - 2;
+  double gain = (
+      distances[cycle.c[idx]][cycle.c[idx + 1]] +
+      distances[cycle.c[idx + 2]][cycle.c[idx + 3]]
+    ) - (
+      distances[cycle.c[idx]][cycle.c[idx + 2]] +
+      distances[cycle.c[idx + 1]][cycle.c[idx + 3]]
+    );
+  if(gain > 0) {
+    int buffer = cycle.c[idx + 1];
+    cycle.c[idx + 1] = cycle.c[idx + 2];
+    cycle.c[idx + 2] = buffer;
+    cycle.poids -= gain;
   }
-
-  double ** distances_locales = (double **)malloc(taille_locale * sizeof(double *));
-  for(int i = 0; i < taille_locale; i ++)
-  {
-    distances_locales[i] = (double *)malloc(taille_locale * sizeof(double));
-    for(int j = 0; j < taille_locale; j ++) {
-      distances_locales[i][j] = distances
-                                    [cycle.c[debut + i]]
-                                    [cycle.c[debut + j]];
-    }
-  }
-
-  t_cycle cycle_local = pvc_exact_branch_and_bound(taille_locale, distances_locales);
-
-  t_cycle nouveau_cycle = cycle;
-
-  for(int i = 0; i < taille_locale; i ++) {
-    nouveau_cycle.c[debut + i] = cycle.c[debut + cycle_local.c[i]];
-    free(distances_locales[i]);
-  }
-  free(distances_locales);
-  return nouveau_cycle;
+  return cycle;
 }
 
 t_cycle opt_cycle(int nbVilles, double ** distances, t_cycle cycle) {
-  for(int i = 0; i < nbVilles; i ++) {
-    cycle = two_opt(i, nbVilles, distances, cycle);
+  if(nbVilles > 4) {
+    for(int i = 0; i < nbVilles - 5; i ++) {
+      cycle = two_opt(i, nbVilles, distances, cycle);
+    }
   }
   return cycle;
 }
