@@ -56,12 +56,12 @@ int main (int argc, char *argv[])
   //afficher_mesure_temps("ppv x250");
 
   // Kruskal only (returns an Euclidian tour)
-  //pvc_mst_euclidian(nb_villes, distances);
+  pvc_mst_euclidian(nb_villes, distances);
   // Kruskal + dedoubling
   solution = pvc_mst_hamiltonian(nb_villes, distances);
 
   // Output (HTML)
-  print_cycle(&solution);
+  //print_cycle(&solution);
   afficher_cycle_html(solution, nb_villes, abscisses, ordonnees);
 
   // Clean-up

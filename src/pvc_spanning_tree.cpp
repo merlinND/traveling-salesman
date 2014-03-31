@@ -85,7 +85,7 @@ void minimum_spanning_tree(int n, double ** edges, int * parents)
   supprimer_aretes(n, edges);
 
   // Print (debug)
-  print_tree(n, parents);
+  //print_tree(n, parents);
 }
 
 /*
