@@ -17,7 +17,7 @@ unsigned int get_root(int const * parents, unsigned int i)
 
 /**
  * @param [in] n Number of nodes of the graph
- * @param [in] distances Weight function for this graph
+ * @param [in] edges The edges of the graph, sorted in ascending order of weight
  * @param [out] tree The minimum spanning tree as an array of boolean:
  * each edge from <edges> is either included or not in the tree
  */
@@ -79,23 +79,24 @@ void print_tree(unsigned int n, int * tree)
 
 /*
  * Recursively visit the subtree of <tree> using the given node as root.
+ * Note: very bad complexity due to use of unappropriate data structure.
  * @param [in] tree A predecessor list representation of the tree
  * @param [in] size The number of nodes of the tree
  * @param [in] root
  * @param [in] visited A boolean array marking the visited nodes
- * @param [out] tour The tour completed with the nodes from this subtree. Note that the cost is NOT computed in the cycle
+ * @param [out] tour The tour completed with the nodes from this subtree. Note that the cost is NOT computed for the cycle
  */
 void visit_subtree(int const * tree, unsigned int size, unsigned int root, char * visited, t_cycle * tour)
 {
   if(!visited[root])
   {
     // Visit the subtree's root node
-    // TODO: add the cost
     visited[root] = 1;
     tour->c[tour->taille] = root;
     tour->taille++;
 
     // Visit each child node
+    // (only way to find them is to go through the whole predecessors list)
     for (unsigned int i = 0; i < size; ++i)
     {
       if (!visited[i] && tree[i] == root)
@@ -166,10 +167,10 @@ t_cycle pvc_mst_hamiltonian(int n, double ** distances)
   {
     if (!seen[euclidian.c[k]]) {
       hamiltonian.c[number_seen] = euclidian.c[k];
+      hamiltonian.taille++;
       
       delta = distances[hamiltonian.c[number_seen-1]][hamiltonian.c[number_seen]];
       hamiltonian.poids += delta;
-      hamiltonian.taille++;
 
       seen[hamiltonian.c[number_seen-1]] = 1;
       number_seen++;
