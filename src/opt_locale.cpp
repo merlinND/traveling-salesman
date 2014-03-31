@@ -33,14 +33,17 @@ t_cycle two_opt(int indexVilleOpt, int nbVilles, double ** distances, t_cycle cy
                                     [cycle.c[debut + j]];
     }
   }
+
   t_cycle cycle_local = pvc_exact_branch_and_bound(taille_locale, distances_locales);
 
+  t_cycle nouveau_cycle = cycle;
+
   for(int i = 0; i < taille_locale; i ++) {
-    cycle.c[debut + i] = cycle.c[debut + cycle_local.c[i]];
+    nouveau_cycle.c[debut + i] = cycle.c[debut + cycle_local.c[i]];
     free(distances_locales[i]);
   }
   free(distances_locales);
-  return cycle;
+  return nouveau_cycle;
 }
 
 t_cycle opt_cycle(int nbVilles, double ** distances, t_cycle cycle) {
