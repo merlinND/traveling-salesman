@@ -66,11 +66,11 @@ void minimum_spanning_tree(int n, double ** edges, int * parents)
       // Merge trees
       if (height[rootI] > height[rootJ]) {
         // Place subtree J under I
-        parents[rootJ] = rootI;
+        parents[rootJ] = i;
       }
       else {
         // Place subtree I under J
-        parents[rootI] = rootJ;
+        parents[rootI] = j;
         if (height[rootI] == height[rootJ])
           height[rootJ]++;
       }
