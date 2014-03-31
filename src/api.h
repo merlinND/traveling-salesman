@@ -2,7 +2,7 @@
 #define API_H
 
 #define MAXMOT 256
-#define MAXS 500
+#define MAXS 1500
 
 /**
  * Structure pour representer un cycle
@@ -44,7 +44,7 @@ void supprimer_distances_et_coordonnees(const int nb_villes, double **distances,
  *
  * @param [in] cycle le cycle à afficher
  */
-void afficher_cycle_html(const t_cycle cycle, double *posX, double *posY);
+void afficher_cycle_html(const t_cycle cycle, unsigned int n, double *posX, double *posY);
 
 /**
  * Affiche le tableau des distances.

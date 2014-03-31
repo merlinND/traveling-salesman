@@ -66,7 +66,7 @@ void supprimer_distances_et_coordonnees(const int nb_villes, double **distances,
  free(ordonnees);
 }
 
-void afficher_cycle_html(const t_cycle cycle, double *posX, double *posY)
+void afficher_cycle_html(const t_cycle cycle, unsigned int n, double *posX, double *posY)
 {
   FILE * fout = fopen("DisplayTsp.html","w");
   if(fout != NULL)
@@ -75,11 +75,11 @@ void afficher_cycle_html(const t_cycle cycle, double *posX, double *posY)
       fprintf(fout, "<html>\n <applet codebase=\".\" code=\"DisplayTsp.class\" width=800 height=600>\n");
       fprintf(fout, "<param name = Problem value = \"custom\">\n");
       fprintf(fout, "<param name = Problem CitiesPosX value = \"");
-      for(i = 0; i < cycle.taille; i++)
+      for(i = 0; i < n; i++)
         fprintf(fout,"%f;",posX[i]);
       fprintf(fout, "\">\n");
       fprintf(fout, "<param name = Problem CitiesPosY value = \"");
-      for(i = 0; i < cycle.taille; i++)
+      for(i = 0; i < n; i++)
         fprintf(fout,"%f;",posY[i]);
       fprintf(fout, "\">\n");
       fprintf(fout, "<param name = Parcours value = \"");
