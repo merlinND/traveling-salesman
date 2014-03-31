@@ -11,6 +11,7 @@
 #include "pvc_exact.h"
 #include "pvc_approche_ppv.h"
 #include "pvc_spanning_tree.h"
+#include "opt_locale.h"
 
 void print_cycle(t_cycle const * cycle)
 {
@@ -45,6 +46,7 @@ int main (int argc, char *argv[])
   pvc_exact(10, distances);
   //afficher_mesure_temps("pvc exact x10");
 
+
   // Naïve solution with pruning
   //demarrer_mesure_temps();
   pvc_exact_branch_and_bound(10, distances);
@@ -59,6 +61,12 @@ int main (int argc, char *argv[])
   pvc_mst_euclidian(nb_villes, distances);
   // Kruskal + dedoubling
   solution = pvc_mst_hamiltonian(nb_villes, distances);
+
+  // Local optimization of a solution based on one of the previous methods
+  //demarrer_mesure_temps();
+  solution = opt_cycle(nb_villes, distances, solution);
+  //afficher_mesure_temps("ppv optimise x250");
+
 
   // Output (HTML)
   //print_cycle(&solution);

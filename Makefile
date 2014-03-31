@@ -11,7 +11,7 @@ EXE = traveling-salesman
 
 # Sources
 # TODO: add back temps.cpp and real-time library
-SRC =  main.cpp api.cpp outils.cpp pvc_exact.cpp pvc_approche_ppv.cpp pvc_spanning_tree.cpp
+SRC =  main.cpp api.cpp outils.cpp pvc_exact.cpp pvc_approche_ppv.cpp pvc_spanning_tree.cpp opt_locale.cpp
 
 # Objets
 OBJECTS = $(SRC:%.cpp=build/%.o)
