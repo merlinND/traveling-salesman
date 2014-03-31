@@ -16,7 +16,7 @@ void print_cycle(t_cycle const * cycle)
 {
   for (int i = 0; i < cycle->taille; ++i)
   {
-    printf("%d -> \n", cycle->c[i]);
+    printf("%d -> ", cycle->c[i]);
   }
 }
 
@@ -31,8 +31,11 @@ int main (int argc, char *argv[])
   unsigned int nb_villes;
   t_cycle solution;
 
-  // Initialize timer (compile with -lrt)
+  // Import cities
   lire_donnees("defi250.csv", &nb_villes, &distances, &abscisses, &ordonnees);
+
+  // Initialize timer (compile with -lrt)
+  // TODO
 
   // Print the distances
   //afficher_distances(nb_villes,distances);
@@ -52,12 +55,14 @@ int main (int argc, char *argv[])
   pvc_approche_ppv(nb_villes, distances);
   //afficher_mesure_temps("ppv x250");
 
-  // Kruskall
-  solution = pvc_spanning_tree(10, distances);
+  // Kruskal only (returns an Euclidian tour)
+  //pvc_mst_euclidian(nb_villes, distances);
+  // Kruskal + dedoubling
+  solution = pvc_mst_hamiltonian(nb_villes, distances);
 
   // Output (HTML)
   print_cycle(&solution);
-  afficher_cycle_html(solution, abscisses, ordonnees);
+  afficher_cycle_html(solution, nb_villes, abscisses, ordonnees);
 
   // Clean-up
   supprimer_distances_et_coordonnees(nb_villes, distances, abscisses, ordonnees);
