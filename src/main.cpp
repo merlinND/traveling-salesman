@@ -12,6 +12,7 @@
 #include "temps.h"
 #include "pvc_exact.h"
 #include "pvc_approche_ppv.h"
+#include "opt_locale.h"
 
 /**
  * Fonction main
@@ -41,8 +42,13 @@ int main (int argc, char *argv[])
 
   // Greedy solution
   demarrer_mesure_temps();
-  t_cycle cycle = pvc_approche_ppv(250, distances);
+  pvc_approche_ppv(250, distances);
   afficher_mesure_temps("ppv x250");
+
+  demarrer_mesure_temps();
+  t_cycle cycle = pvc_approche_ppv(250, distances);
+  cycle = opt_cycle(250, distances, cycle);
+  afficher_mesure_temps("ppv optimise x250");
 
   // Kruskall
   // TODO
