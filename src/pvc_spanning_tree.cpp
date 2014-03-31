@@ -16,6 +16,28 @@ unsigned int get_root(int const * parents, unsigned int i)
 }
 
 /**
+ * Print tree in GraphViz format (debug function)
+ */
+void print_tree(unsigned int n, int * tree)
+{
+  printf("digraph {\n");
+  // For each node
+  for (int i = 0; i < n; ++i)
+    printf("\"%d\"\n", i);
+
+  // For each edge
+  for (int i = 0; i < n; ++i)
+  {
+    for (int j = 0; j < n; ++j)
+    {
+      if (tree[j] == i)
+        printf("\"%d\" -> \"%d\"\n", i, j);
+    }
+  }
+  printf("}\n");
+}
+
+/**
  * @param [in] n Number of nodes of the graph
  * @param [in] edges The edges of the graph, sorted in ascending order of weight
  * @param [out] tree The minimum spanning tree as an array of boolean:
@@ -42,9 +64,12 @@ void minimum_spanning_tree(int n, double ** edges, int * parents)
     if (rootI != rootJ)
     {
       // Merge trees
-      if (height[rootI] > height[rootJ])
+      if (height[rootI] > height[rootJ]) {
+        // Place subtree J under I
         parents[rootJ] = rootI;
+      }
       else {
+        // Place subtree I under J
         parents[rootI] = rootJ;
         if (height[rootI] == height[rootJ])
           height[rootJ]++;
@@ -58,23 +83,9 @@ void minimum_spanning_tree(int n, double ** edges, int * parents)
 
   // Clean-up
   supprimer_aretes(n, edges);
-}
 
-/**
- * Print tree (debug function)
- */
-void print_tree(unsigned int n, int * tree)
-{
-  for (int i = 0; i < n; ++i)
-  {
-    printf("Node %d (of parent %d) has children: ", i, tree[i]);
-    for (int j = 0; j < n; ++j)
-    {
-      if (tree[j] == i)
-        printf("%d ", j);
-    }
-    printf("\n");
-  }
+  // Print (debug)
+  print_tree(n, parents);
 }
 
 /*

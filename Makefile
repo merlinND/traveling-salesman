@@ -29,6 +29,11 @@ run: public/$(EXE)
 	rm -f public/DisplayTsp.html
 	cd public; ./$(EXE)
 
+graph: public/$(EXE)
+	rm -f public/DisplayTsp.html
+	cd public; ./$(EXE) > ./spanning_tree.dot
+	cd public; dot -Tpng -o ./spanning_tree.png ./spanning_tree.dot
+
 public/$(EXE): $(OBJECTS)
 	$(CC) -o $@ $^ $(LNFLAGS)
 
