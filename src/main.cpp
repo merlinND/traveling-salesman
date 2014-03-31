@@ -35,6 +35,7 @@ int main (int argc, char *argv[])
   pvc_exact(10, distances);
   afficher_mesure_temps("pvc exact x10");
 
+
   // Naïve solution with pruning
   demarrer_mesure_temps();
   pvc_exact_branch_and_bound(10, distances);
