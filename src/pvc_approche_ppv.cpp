@@ -22,9 +22,11 @@ t_cycle pvc_approche_ppv(int nbVilles, double ** distances)
       }
     }
 
-    courant.poids += trajet;
+    if(trajet != DOUBLE_MAX)
+      courant.poids += trajet;
     courant.c[courant.taille] = ville;
   }
-  
+
+  courant.poids += distances[0][courant.c[courant.taille -1]];
   return courant;
 }
