@@ -81,9 +81,6 @@ void minimum_spanning_tree(int n, double ** edges, int * parents)
     h++;
   }
 
-  // Clean-up
-  supprimer_aretes(n, edges);
-
   // Print (debug)
   //print_tree(n, parents);
 }
@@ -138,6 +135,8 @@ t_cycle pvc_mst_euclidian(int n, double ** distances)
   // T[a][1] = j;        // The destination node
   // T[a][2] = d[i][j];  // The cost of this edge
   minimum_spanning_tree(n, edges, spanning_tree);
+  // Clean-up
+  supprimer_aretes(n, edges);
 
   // Generate an Euclidian graph from the minmum spanning tree (i.e. allowing repetitions)
   // (simply double each edge of the MSP to obtain an Euclidian cycle)
@@ -172,19 +171,18 @@ t_cycle pvc_mst_hamiltonian(int n, double ** distances)
     seen[i] = 0;
 
   seen[hamiltonian.c[0]] = 1;
-  unsigned int number_seen = 1, k = 0;
+  unsigned int k = 0;
   double delta;
-  while (number_seen < n)
+  while (hamiltonian.taille < n)
   {
     if (!seen[euclidian.c[k]]) {
-      hamiltonian.c[number_seen] = euclidian.c[k];
+      hamiltonian.c[hamiltonian.taille] = euclidian.c[k];
       hamiltonian.taille++;
       
-      delta = distances[hamiltonian.c[number_seen-1]][hamiltonian.c[number_seen]];
+      delta = distances[hamiltonian.c[hamiltonian.taille-1]][hamiltonian.c[hamiltonian.taille]];
       hamiltonian.poids += delta;
 
-      seen[hamiltonian.c[number_seen-1]] = 1;
-      number_seen++;
+      seen[hamiltonian.c[hamiltonian.taille-1]] = 1;
     }
     k++;
   }
