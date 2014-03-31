@@ -7,19 +7,81 @@ par **Merlin Nimier-David & Robin Ricard**, Binôme **B3145**
 ## 1. Résolution exacte
 
 ```C
-// code here
+// Partie commune
+
+void pvc_exact_recursif(int nbVilles, double ** distances, t_cycle * chemin, t_cycle * meilleur, bool bb)
+{
+  if (chemin->poids > meilleur->poids && bb)
+  {
+    return;
+  }
+  else if (chemin->taille == nbVilles)
+  {
+    double trajetRetour = distances[chemin->c[chemin->taille -1]][0];
+    if (chemin->poids + trajetRetour < meilleur->poids)
+    {
+      chemin->poids += trajetRetour;
+      recopier_chemin(chemin, meilleur);
+      chemin->poids -= trajetRetour;
+    }
+  }
+  else
+  {
+    for(int i = 0; i < nbVilles; ++i)
+    {
+      if(!est_dans_chemin(chemin, i))
+      {
+        double trajet = distances[chemin->c[chemin->taille - 1]][i];
+        chemin->taille++;
+        chemin->poids += trajet;
+        chemin->c[chemin->taille-1] = i;
+
+        // Appel récursif
+        pvc_exact_recursif(nbVilles, distances, chemin, meilleur, bb);
+
+        // "Dépiler" la dernière ville parcourue pour commencer une nouvelle branche
+        chemin->taille--;
+        chemin->poids -= trajet;
+      }
+    }
+  }
+}
 ```
 
 ### 1. PVC exact naif
 
 ```C
-// code here
+t_cycle pvc_exact(int nbVilles, double ** distances)
+{
+   t_cycle meilleur, courant;
+   // Solution actuelle : un chemin de poids infini
+   meilleur.taille = 0;
+   meilleur.poids = DOUBLE_MAX;
+   // Par convention, on commence par la ville 0
+   courant.taille = 1;
+   courant.poids = 0;
+   courant.c[0] = 0;
+   pvc_exact_recursif(nbVilles, distances, &courant, &meilleur, false);
+   return meilleur;
+}
 ```
 
 ### 2. PVC exact Branch & Bound
 
 ```C
-// code here
+t_cycle pvc_exact_branch_and_bound(int nbVilles, double ** distances)
+{
+   t_cycle meilleur, courant;
+   // Solution actuelle : un chemin de poids infini
+   meilleur.taille = 0;
+   meilleur.poids = DOUBLE_MAX;
+   // Par convention, on commence par la ville 0
+   courant.taille = 1;
+   courant.poids = 0;
+   courant.c[0] = 0;
+   pvc_exact_recursif(nbVilles, distances, &courant, &meilleur, true);
+   return meilleur;
+}
 ```
 
 ### 3. Temps d'execution
@@ -35,7 +97,36 @@ par **Merlin Nimier-David & Robin Ricard**, Binôme **B3145**
 ### 1. PVC approche PPV
 
 ```C
-// code here
+t_cycle pvc_approche_ppv(int nbVilles, double ** distances)
+{
+  // Par convention, on commence par la ville 0
+  t_cycle courant;
+  courant.poids = 0;
+  courant.c[0] = 0;
+
+  // Choix glouton : on choisit toujours la ville la plus proche
+  for (courant.taille = 1; courant.taille <= nbVilles; ++courant.taille)
+  {
+    int ville;
+    double d, trajet = DOUBLE_MAX;
+    // Trouver la ville la plus proche qui n'est pas dans le chemin
+    for (int j = 1; j < nbVilles; ++j) {
+      d = distances[courant.c[courant.taille-1]][j];
+      if (d < trajet && !est_dans_chemin(&courant, j)) {
+        ville = j;
+        trajet = d;
+      }
+    }
+
+    if(trajet != DOUBLE_MAX)
+      courant.poids += trajet;
+    courant.c[courant.taille] = ville;
+  }
+
+  courant.poids += distances[0][courant.c[courant.taille -1]];
+  return courant;
+}
+
 ```
 
 ### 2. Complexité
@@ -91,13 +182,39 @@ _A revoir, semble crapuleux ..._
 ### 3. Cycle Opt 2
 
 ```C
-// code here
+// note : Au lieu de partir du centre a0, on définit juste un index de départ,
+// ce qui reste plus simple pour écrire le "désentrelacement".
+t_cycle two_opt(int idx, int nbVilles, double ** distances, t_cycle cycle)
+{
+  // on mesure le gain en entralacant/désentrelacant
+  double gain = (
+      distances[cycle.c[idx]][cycle.c[idx + 1]] +
+      distances[cycle.c[idx + 2]][cycle.c[idx + 3]]
+    ) - (
+      distances[cycle.c[idx]][cycle.c[idx + 2]] +
+      distances[cycle.c[idx + 1]][cycle.c[idx + 3]]
+    );
+  if(gain > 0) { // on applique l'opération si le gain est positif
+    int buffer = cycle.c[idx + 1];
+    cycle.c[idx + 1] = cycle.c[idx + 2];
+    cycle.c[idx + 2] = buffer;
+    cycle.poids -= gain;
+  }
+  return cycle;
+}
 ```
 
 ### 4. Utilisation sur les données
 
 ```C
-// code here
+t_cycle opt_cycle(int nbVilles, double ** distances, t_cycle cycle) {
+  if(nbVilles > 4) { // il nous faut assez de villes
+    for(int i = 0; i < nbVilles - 5; i ++) {
+      cycle = two_opt(i, nbVilles, distances, cycle);
+    }
+  }
+  return cycle;
+}
 ```
 
 ## 5. Analyse
