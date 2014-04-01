@@ -132,57 +132,134 @@ t_cycle pvc_approche_ppv(int nbVilles, double ** distances)
 ### 2. Complexité
 
 On a un algorithme contenant deux boucles imbriquées parcourant chacune les `n` noeuds.
-
-Comme il n'y a pas de recursivité, on retrouve une complexité `n^2`.
+L'appel à `est_dans_chemin` a une complexité linéaire en la taille du chemin, qui est majorée par le nombre de villes.
+On retrouve une complexité en `O(n^3)`.
 
 ## 3. Approximation : Algorithme Polynomial
 
-### 1. Calcul ACM
+### 1. Calcul de l'arbre couvrant minimum par l'algorithme de Kruskal
 
 ```C
-// code here
+void minimum_spanning_tree(int n, double ** edges, int * parents)
+{
+  // Initialisation
+  unsigned int height[n];
+  for (unsigned int i = 0; i < n; ++i) {
+    parents[i] = -1;
+    height[i] = 0;
+  }
+
+  // Examiner chaque arrête dans l'ordre de coût croissant
+  unsigned int i, j, rootI, rootJ;
+  unsigned int h = 0, size = 1;
+  while (size < n)
+  {
+    i = edges[h][0];
+    j = edges[h][1];
+    rootI = get_root(parents, i);
+    rootJ = get_root(parents, j);
+    // S'il s'agit d'une arrête reliant deux arbres non-reliés
+    if (rootI != rootJ)
+    {
+      // Relier les arbres
+      if (height[rootI] > height[rootJ]) {
+        // Placer le sous-arbre J sous i
+        parents[rootJ] = i;
+      }
+      else {
+        // Placer le sous-arbre I sous j
+        parents[rootI] = j;
+        if (height[rootI] == height[rootJ])
+          height[rootJ]++;
+      }
+
+      size++;
+    }
+    h++;
+  }
+}
 ```
 
-### 2. Explications concernant le passage de l'arbre couvrant vers le cycle
+### 2. Conversion de l'ACM en cycle euclidien
 
-_Explications ici ..._
+À partir d'un ACM, il suffit de double chaque arrête pour obtenir un cycle euclidien. Les villes peuvent être répétées jusqu'à `N` fois, mais elles sont visitées dans l'ordre dicté par l'ACM.
 
-### 3. Cycle hamiltonien ACM
+### 3. Conversion du cycle Euclidien en cycle hamiltonien
+
+Il suffit, en conservant l'ordre, de supprimer tous les nœuds ayant déjà été parcourus.
 
 ```C
-// code here
+t_cycle pvc_mst_hamiltonian(int n, double ** distances)
+{
+  t_cycle euclidian = pvc_mst_euclidian(n, distances);
+  t_cycle hamiltonian;
+  hamiltonian.c[0] = euclidian.c[0];
+  hamiltonian.taille = 1;
+
+  unsigned char seen[n];
+  for (unsigned int i = 0; i < n; ++i)
+    seen[i] = 0;
+
+  seen[hamiltonian.c[0]] = 1;
+  unsigned int k = 0;
+  double delta;
+  while (hamiltonian.taille < n)
+  {
+    if (!seen[euclidian.c[k]]) {
+      hamiltonian.c[hamiltonian.taille] = euclidian.c[k];
+      hamiltonian.taille++;
+
+      delta = distances[hamiltonian.c[hamiltonian.taille-1]][hamiltonian.c[hamiltonian.taille]];
+      hamiltonian.poids += delta;
+
+      seen[hamiltonian.c[hamiltonian.taille-1]] = 1;
+    }
+    k++;
+  }
+
+  return hamiltonian;
+}
 ```
 
 ### 4. Relation entre `L(A)` et `L(H)`
 
-_Explications ici ..._
+Notre graphe satisfait l'inégalité triangulaire : pour toutes villes `a, b, c`, on a :
+
+    d(a,c) < d(a,b) + d(b,c)
+
+Ainsi, lors de l'étape précédente, en supprimant des doublons, on ne peut qu'avoir raccourci le poids du cycle. Pour A le cycle Euclidien et H le cycle hamiltonien, on obtient :
+
+    L(H) <= L(A)
 
 ### 5. Relation entre `L(A)` et `L(Opt)`
 
-_Explications ici ..._
+Si on considère un cycle hamiltonien de poids minimum noté `Opt`, on a la relation :
+
+    L(Opt) <= L(A)
+    // TODO: trouver une majoration plus serrée
 
 ### 6. Résultat obtenu sur les données
 
-_Explications ici ..._
+Pour le problème de test de `n = 250` villes, nous obtenons un cycle de poids `d = 18.2`. Ce résultat étant moins bon que l'approche des plus proche voisin, il semblerait que notre algorithme souffre d'un problème d'implémentation. L'algorithme de calcul de l'arbre couvrant pose probablement problème.
 
 ## 4. Approximation : Optimisation locale
 
 ### 1. Démonstration : `dcycle` est une distance
 
-`dcycle` dénombre toutes les arrêtes inégales entre deux cycles différents. C'est alors un critère de discrimination entre ces deux cycles, on peut mesurer la distance entre ces deux cycles.
+`dcycle` est une distance car :
 
-_A revoir, semble crapuleux ..._
+- `dcycle(a,b) = dcycle(b,a)` (symétrie)
+- `dcycle(a,b) = 0` implique que `a` et `b` aient `n` arrêtes en commun. Or le problème est de taille `n` donc les cycles ont au maximum `n` arrêtes. Donc `a = b`, `dcycle` respecte la propriété de séparation.
+- `dcycle` respecte également l'inégalité triangulaire (à démontrer)
 
-### 2. Cardinal de `C(a0, 2)`
+### 2. Cardinal de `C(a, 2)`
 
-On dénombre deux cycles hamiltoniens différents : le premier avec deux arrêtes croisées et le second sans arrêtes croisées.
-
-_A revoir, semble crapuleux ..._
+`C(a0, 2)` dénombre les cycles hamiltoniens de taille 5 contenant le nœud `a`. On distingue deux cycles hamiltoniens : le premier avec deux arrêtes croisées et le second sans arrêtes croisées.
 
 ### 3. Cycle Opt 2
 
 ```C
-// note : Au lieu de partir du centre a0, on définit juste un index de départ,
+// Note : Plutôt que de partir du centre a0, on définit juste un index de départ,
 // ce qui reste plus simple pour écrire le "désentrelacement".
 t_cycle two_opt(int idx, int nbVilles, double ** distances, t_cycle cycle)
 {
@@ -226,12 +303,14 @@ t_cycle opt_cycle(int nbVilles, double ** distances, t_cycle cycle) {
 | Naif                                 | 12     | 20s               | 3.31     |
 | Branch & Bound                       | 12     | 475ms             | 3.31     |
 | Branch & Bound                       | 15     | 45s               | 3.37     |
-| PPV                                  | 15     | 0,39ms            | 4,22     |
-| PPV                                  | 250    | 2,07ms            | 14,73    |
-| PPV + Opt2                           | 250    | 2,21ms            | 14,56    |
+| PPV                                  | 15     | 0.39ms            | 4.22     |
+| PPV                                  | 250    | 2.07ms            | 14.73    |
+| PPV + Opt2                           | 250    | 2.21ms            | 14.56    |
+| Minimum spanning tree                | 250    | 3.8ms             | 18.98    |
+| Minimum spanning tree + Opt2         | 250    | 4.01ms            | 18.18    |
 
 ### 2. Conclusion
 
-ACM est de loin le meilleur algorithme présenté, à la fois rapide, peu consommateur de mémoire et relativement précis, il est le plus efficace pour résoudre ce genre de problème.
+ACM serait le meilleur algorithme présenté, à la fois rapide, peu consommateur de mémoire et relativement précis, il est le plus efficace pour résoudre ce genre de problème. Cependant, notre implémentation comportant certainement une erreur, nous n'avons pas obtenu les résultats attendus.
 
 Dans tous les cas, pour n'importe quel algorithme de résolution par approximation, il est toujours intéressant d'ajouter une phase d'optimisation qui coûte très peu pour des améliorations non négligeables au vu du temps passé à optimiser.
